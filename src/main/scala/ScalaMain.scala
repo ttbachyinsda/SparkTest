@@ -5,6 +5,9 @@ import java.io.File
 
 import scala.math.random
 import org.apache.spark.{SparkConf, SparkContext}
+
+import scala.collection.mutable.ArrayBuffer
+import scala.util.Random
 object ScalaMain {
   def wordcount(): Unit ={
     val outputpath = "e:/output/"
@@ -30,9 +33,44 @@ object ScalaMain {
     println("Pi is roughly " + 4.0 * count / n)
     spark.stop()
   }
+  var simpledata : ArrayBuffer[Long] = ArrayBuffer[Long]()
+  def simpleadd(): Unit ={
+    val outputpath = "e:/output/"
+    DeleteDirectory.deleteDir(new File(outputpath))
+    val maxnum = 20000000
+    for (i <- 1 to maxnum){
+      simpledata += Random.nextInt(200000)
+    }
+    println("Test begin")
+    val begintime1 = System.currentTimeMillis()
+
+    val conf = new SparkConf().setAppName("Simple Application").setMaster("local[*]")
+    val spark = new SparkContext(conf)
+    var distdata = spark.parallelize(simpledata)
+
+//    val result = distdata.map((_,1)).reduceByKey(_+_)
+//    result.saveAsTextFile(outputpath)
+
+//    val result = distdata.reduce((a,b) => Math.max(a,b))
+//    println(result)
+
+//    val result = distdata.map(a => 3*a).reduce((a,b) => Math.max(a,b))
+//    println(result)
+
+//    val result = distdata.map(a => {if (a>100000) 1 else 0 }).reduce((a,b) => a+b)
+//    println(result)
+
+    val result = distdata.map((_,1)).reduceByKey((a,b) => a+b)
+    result.saveAsTextFile(outputpath)
+
+    val endtime1 = System.currentTimeMillis()
+    println("time = "+(endtime1-begintime1))
+
+  }
   def main(args: Array[String]): Unit = {
-    wordcount()
-    calculatepi()
+//    wordcount()
+//    calculatepi()
+    simpleadd()
   }
 
 }
