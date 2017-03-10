@@ -36,7 +36,9 @@ object ScalaMain {
   var simpledata : ArrayBuffer[Long] = ArrayBuffer[Long]()
   def simpleadd(): Unit ={
     val outputpath = "e:/output/"
+    val outputpath2 = "e:/output2/"
     DeleteDirectory.deleteDir(new File(outputpath))
+    DeleteDirectory.deleteDir(new File(outputpath2))
     val maxnum = 20000000
     for (i <- 1 to maxnum){
       simpledata += Random.nextInt(200000)
@@ -62,14 +64,18 @@ object ScalaMain {
 
     val result = distdata.map((_,1)).reduceByKey((a,b) => a+b)
     result.saveAsTextFile(outputpath)
+    val result2 = result.filter(a => {
+      if (a._1 < 50000) true else false
+    })
+    result2.saveAsTextFile(outputpath2)
 
     val endtime1 = System.currentTimeMillis()
     println("time = "+(endtime1-begintime1))
 
   }
   def main(args: Array[String]): Unit = {
-//    wordcount()
-//    calculatepi()
+    wordcount()
+    calculatepi()
     simpleadd()
   }
 
